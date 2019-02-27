@@ -1,6 +1,7 @@
 {
-  "name": "babel-typescript-sample",
-  "version": "0.7.0",
+  "name": "rhythmic-dishwashing-server",
+  "repository": "luudjanssen/rhythmic-dishwashing-server",
+  "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "type-check": "tsc --noEmit",
