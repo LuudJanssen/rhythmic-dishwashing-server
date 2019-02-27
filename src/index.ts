@@ -1,8 +1,6 @@
-export class C {
-    private x = 10
-    getX = () => this.x;
-    setX = (newVal: number) => { this.x = newVal; }
-}
+import { server } from "./server/server";
+import { socketHandler } from "./socket/handler";
+import { io } from "./socket/socket";
 
-export let x = new C();
-export let y = { ...{ some: "value" } }
+server.listen(3000);
+io.on("connection", socketHandler);
