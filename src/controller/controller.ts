@@ -1,8 +1,12 @@
 import johnnyFive, { Button } from "johnny-five";
 
 const board = new johnnyFive.Board();
+const drippingTrayPin = 3;
 
 let builtInLed: johnnyFive.Led;
+let proximitySensor: johnnyFive.Switch;
+let drippingTraySensor: johnnyFive.Switch;
+let drippingTrayLed: johnnyFive.Led;
 
 export interface IComponent {
   pin: number;
@@ -51,7 +55,21 @@ function createConnectionLedMappingFromPin(
 
 board.on("ready", () => {
   builtInLed = new johnnyFive.Led(13);
+  proximitySensor = new johnnyFive.Switch({
+    pin: 2,
+    type: "NC"
+  });
+  drippingTraySensor = new johnnyFive.Switch(drippingTrayPin);
+  drippingTrayLed = new johnnyFive.Led(12);
   connectionLedMapping = CONNECTION_PINS.map(createConnectionLedMappingFromPin);
 });
 
-export { board, connectionLedMapping, builtInLed };
+export {
+  board,
+  connectionLedMapping,
+  builtInLed,
+  proximitySensor,
+  drippingTraySensor,
+  drippingTrayLed,
+  drippingTrayPin
+};
