@@ -74,7 +74,8 @@ function attachConnectionLedHandler({
     "down",
     connectionSwitch.on(() => {
       emitConnectionState(connection.pin, true);
-      led.instance.blink(50);
+      led.instance.brightness(255);
+      led.instance.fade(0, 200);
       console.log(`Connection on pin ${connection.pin} connected`);
     })
   );
@@ -83,8 +84,8 @@ function attachConnectionLedHandler({
     "up",
     connectionSwitch.off(() => {
       emitConnectionState(connection.pin, false);
-      led.instance.stop(1);
-      led.instance.off();
+      led.instance.brightness(255);
+      led.instance.fade(0, 200);
       console.log(`Connection on pin ${connection.pin} disconnected`);
     })
   );
@@ -99,6 +100,8 @@ export function socketHandler(socket: Socket) {
   });
 
   board.on("ready", () => {
+    console.log("Board ready");
+
     boardReady = true;
 
     connectionLedMapping.forEach(attachConnectionLedHandler);
