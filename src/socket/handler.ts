@@ -1,3 +1,4 @@
+import debounce from "lodash/debounce";
 import { Socket } from "socket.io";
 import {
   board,
@@ -14,12 +15,15 @@ import { io } from "./socket";
 let ledState = false;
 let boardReady = false;
 const buttonState = false;
+const DEBOUNCE = 100;
 
 class Switch {
   private state: boolean;
+  private lastPlay: number;
 
   constructor(defaultState = false) {
     this.state = defaultState;
+    this.lastPlay = Date.now();
   }
 
   public on(callback: () => void): () => void {
@@ -32,19 +36,20 @@ class Switch {
 
   private callbackOnState(callback: () => void, state: boolean) {
     return () => {
-      if (this.state === state) {
+      if (this.state === state || Date.now() < this.lastPlay + DEBOUNCE) {
         return;
       }
 
       this.state = state;
+      this.lastPlay = Date.now();
       callback();
     };
   }
 }
 
-function emitButtonState() {
-  io.emit("button-state", {
-    state: buttonState
+function emitStartState(startState: boolean) {
+  io.emit("start-state", {
+    start: startState
   });
 }
 
@@ -91,12 +96,27 @@ function attachConnectionLedHandler({
   );
 }
 
+function showBeat(beat: number) {
+  if (!boardReady) {
+    return;
+  }
+
+  const led = connectionLedMapping[beat].led.instance;
+
+  led.brightness(20);
+  led.fade(0, 400);
+}
+
 export function socketHandler(socket: Socket) {
   console.log("connection");
   io.emit("test-forward", { hello: "world" });
 
   socket.on("test-backward", data => {
     toggleLed();
+  });
+
+  socket.on("beat", beat => {
+    showBeat(beat);
   });
 
   board.on("ready", () => {
@@ -131,6 +151,7 @@ export function socketHandler(socket: Socket) {
       "open",
       proximitySwitch.on(() => {
         console.log("Proximity open");
+        emitStartState(true);
       })
     );
 
@@ -138,6 +159,7 @@ export function socketHandler(socket: Socket) {
       "close",
       proximitySwitch.off(() => {
         console.log("Proximity close");
+        emitStartState(false);
       })
     );
   });

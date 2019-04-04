@@ -32,7 +32,9 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.123",
     "johnny-five": "^1.0.0",
+    "lodash": "^4.17.11",
     "socket.io": "^2.2.0"
   }
 }
